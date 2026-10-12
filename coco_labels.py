@@ -1,8 +1,7 @@
 import json
-from dataclasses import dataclass
-from PIL import Image
 
 import pandas as pd
+from PIL import Image
 
 from mscoco_label_map import bdd_to_coco_idx, category_map
 
@@ -86,23 +85,32 @@ def process_annotations(data, unique_annotation_idx, image_idx):
             if object["category"] in bdd_to_coco_idx:
                 if object["box2d"]:
                     box2d = [object["box2d"]["x1"], object["box2d"]["y1"], object["box2d"]["x2"], object["box2d"]["y2"]] 
+                    area = (box2d[2] - box2d[0]) * (box2d[3] - box2d[1]) 
+                    iscrowd = 0
                     data = {
                                 "id": unique_annotation_idx, 
                                 "image_id": image_idx, 
                                 "category_id": bdd_to_coco_idx[object["category"]],
-                                "bbox": box2d
+                                "bbox": box2d,
+                                "area": area,
+                                "iscrowd": iscrowd
                             }
                 elif object["poly2d"]:
                     box2d = bbox_from_segmentation(object["poly2d"])
+                    area = box2d[2] * box2d[3]
+                    iscrowd = 0
                     data = {
                                 "id": unique_annotation_idx, 
                                 "image_id": image_idx, 
                                 "category_id": bdd_to_coco_idx[object["category"]],
                                 "segmentation": object["poly2d"],
-                                "bbox": box2d
+                                "bbox": box2d,
+                                "area": area,
+                                "iscrowd": iscrowd
                             }
 
                 annotations_list.append(data)
+                unique_annotation_idx += 1
 
     return annotations_list, unique_annotation_idx
 
