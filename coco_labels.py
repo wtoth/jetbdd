@@ -79,40 +79,28 @@ def process_image(unique_image_idx):
     return image_metadata
 
 def process_annotations(data, unique_annotation_idx, image_idx):
-    annotations_list = []
+    annotations = []
     for frame in data["frames"]:
         for object in frame["objects"]: 
-            if object["category"] in bdd_to_coco_idx:
-                if object["box2d"]:
-                    box2d = [object["box2d"]["x1"], object["box2d"]["y1"], object["box2d"]["x2"], object["box2d"]["y2"]] 
-                    area = (box2d[2] - box2d[0]) * (box2d[3] - box2d[1]) 
-                    iscrowd = 0
-                    data = {
-                                "id": unique_annotation_idx, 
-                                "image_id": image_idx, 
-                                "category_id": bdd_to_coco_idx[object["category"]],
-                                "bbox": box2d,
-                                "area": area,
-                                "iscrowd": iscrowd
-                            }
-                elif object["poly2d"]:
-                    box2d = bbox_from_segmentation(object["poly2d"])
-                    area = box2d[2] * box2d[3]
-                    iscrowd = 0
-                    data = {
-                                "id": unique_annotation_idx, 
-                                "image_id": image_idx, 
-                                "category_id": bdd_to_coco_idx[object["category"]],
-                                "segmentation": object["poly2d"],
-                                "bbox": box2d,
-                                "area": area,
-                                "iscrowd": iscrowd
-                            }
+            category_id = bdd_to_coco_idx.get(object["category"])
+            box = object.get("box2d")
+                
+            if category_id is None or not box:
+                continue
+            x1, y1, x2, y2 = box["x1"], box["y1"], box["x2"], box["y2"]
+            w, h = x2 - x1, y2 - y1
+            annotations.append({
+                "id": unique_annotation_idx,
+                "image_id": image_idx,
+                "category_id": category_id,
+                "bbox": [x1, y1, w, h],   #COCO format: x, y, width, height
+                "area": w * h,
+                "iscrowd": 0,
+            })
+                
+            unique_annotation_idx += 1
 
-                annotations_list.append(data)
-                unique_annotation_idx += 1
-
-    return annotations_list, unique_annotation_idx
+    return annotations, unique_annotation_idx
 
 def get_categories():
     category_list = []
@@ -120,8 +108,8 @@ def get_categories():
         category_list.append({"id":id, "name":name})
     return {"categories": category_list}
 
-unique_image_idx = 0
-unique_annotation_idx = 0
+unique_image_idx = 1
+unique_annotation_idx = 1
 for file in label_files:
     absolute_unique_filename = file.split(".")[0]
     unique_filename = absolute_unique_filename.split("/")[-1] 

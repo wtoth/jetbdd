@@ -255,7 +255,7 @@ bdd_to_coco_idx = {
     'other vehicle': 3, 
     'bike': 2, 
     'motor': 4, 
-    'traffic sign': 13
+    # 'traffic sign': 13
     }
 
 # category_idx = {name: idx for idx, name in category_map.items()}
