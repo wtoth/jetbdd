@@ -4,7 +4,7 @@ import os
 from PIL import Image
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-from rfdetr import RFDETRNano
+from rfdetr import RFDETRNano, RFDETRMedium
 from tqdm import tqdm
 
 GT_PATH = "data/bdd_coco_labels.json"
@@ -12,7 +12,8 @@ IMAGE_DIR = "data/100k/val"
 PRED_PATH = "data/predictions.json"
 
 coco_gt = COCO(GT_PATH)
-model = RFDETRNano(device="mps")
+# model = RFDETRNano(device="mps")
+model = RFDETRMedium(device="mps")
 
 results = []
 for img_id in tqdm(coco_gt.getImgIds()):
