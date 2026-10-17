@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import pickle
 
 from PIL import Image
 from pycocotools.coco import COCO
@@ -12,10 +13,9 @@ GT_PATH = "data/bdd_coco_labels.json"
 IMAGE_DIR = "data/100k/val" 
 PRED_PATH = "data/predictions.json"
 ATTR_PATH = "data/BDD_attributes.json"
+EVAL_PATH = "data/eval_all.pkl"
 
 coco_gt = COCO(GT_PATH)
-# print(coco_gt)
-# sys.exit()
 
 # model = RFDETRNano(device="mps")
 model = RFDETRMedium(device="mps")
@@ -57,3 +57,13 @@ coco_eval = COCOeval(coco_gt, coco_dt, iouType="bbox")
 coco_eval.evaluate()
 coco_eval.accumulate()
 coco_eval.summarize()
+
+with open(ATTR_PATH, "r") as attr_path:
+    attr = json.load(attr_path)
+
+with open(EVAL_PATH, "wb") as f:
+    pickle.dump({
+        "params": coco_eval.params,
+        "evalImgs": coco_eval.evalImgs,
+        "attrs": {int(key): attr[key] for key in attr},
+    }, f)
