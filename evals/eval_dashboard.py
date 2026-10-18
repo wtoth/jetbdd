@@ -7,6 +7,7 @@ from collections import Counter
 import pandas as pd
 import streamlit as st
 from pycocotools.cocoeval import COCOeval
+from common import FIELDS, load
 
 # ideal dashboard will contain at least 2 pages
 # Overall results and best and worst performing categories
@@ -16,19 +17,10 @@ from pycocotools.cocoeval import COCOeval
 # # Selected images will show their bounding boxes for review
 
 MIN_IMAGES = 50
-EVAL_PATH = "data/eval_all.pkl"
-FIELDS = ["weather", "scene", "timeofday"]
 STAT_NAMES = [
     "AP @[.50:.95]", "AP @.50", "AP @.75", "AP small", "AP medium", "AP large",
     "AR maxDets=1", "AR maxDets=10", "AR maxDets=100", "AR small", "AR medium", "AR large",
 ]
-
-
-@st.cache_resource
-def load():
-    with open(EVAL_PATH, "rb") as f:
-        return pickle.load(f)
-
 
 @st.cache_data
 def slice_eval(weather, scene, timeofday):
