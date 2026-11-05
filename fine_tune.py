@@ -9,18 +9,20 @@ OUTPUT_DIR = "outputs"
 
 def main():
     model = RFDETRNano(device="mps")
+    model_name = model.__class__.__name__
 
     model.train(
         dataset_dir=DATASET_PATH,
-        epochs=1,
+        epochs=3,
         batch_size=16,
         grad_accum_steps=4,
         lr=1e-4,
         output_dir=OUTPUT_DIR,
         progress_bar=True,
-        # resume="checkpoints/<checkpoint-file>",
+        wandb=True,
+        project="jetbdd",
+        run=f"{model_name}-test"
     )
-
 
 if __name__ == "__main__":
     main()
