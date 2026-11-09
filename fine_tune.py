@@ -21,7 +21,8 @@ def main():
         progress_bar=True,
         wandb=True,
         project="jetbdd",
-        run=f"{model_name}-test"
+        run=f"{model_name}-test",
+        train_log_on_step=True,
     )
 
 if __name__ == "__main__":
