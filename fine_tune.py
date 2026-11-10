@@ -1,4 +1,5 @@
 from rfdetr import RFDETRBase, RFDETRNano
+import torch
 
 
 DATASET_PATH = "data/100k"
@@ -8,7 +9,17 @@ ATTR_PATH = "data/BDD_attributes.json"
 OUTPUT_DIR = "outputs"
 
 def main():
-    model = RFDETRNano(device="mps")
+    if torch.backends.mps.is_available():
+        print("mps")
+        device = torch.device("mps")
+    elif torch.cuda.is_available():
+        print("cuda")
+        device = torch.device("cuda")
+    else:
+        print("cpu")
+        device = torch.device("cpu")
+
+    model = RFDETRNano(device=device)
     model_name = model.__class__.__name__
 
     model.train(
