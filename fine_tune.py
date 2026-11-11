@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--pred-path", default="data/train_predictions.json", help="Path to the training predictions JSON. Default: %(default)s")
     parser.add_argument("--attr-path", default="data/BDD_attributes.json",help="Path to the BDD attributes JSON. Default: %(default)s")
     parser.add_argument("--output-dir", default="outputs", help="Where checkpoints and logs are written. Default: %(default)s")
+    parser.add_argument("--wandb", default=False, help="Whether wandb should be record results Default: %(default)s")
     args = parser.parse_args()
 
     if torch.backends.mps.is_available():
@@ -39,7 +40,7 @@ def main():
         lr=1e-4,
         output_dir=args.output_dir,
         progress_bar=True,
-        wandb=True,
+        wandb=False,
         project="jetbdd",
         run=f"{model_name}-test",
         train_log_on_step=True,
