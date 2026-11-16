@@ -1,3 +1,4 @@
+import os
 import argparse
 from rfdetr import RFDETRBase, RFDETRNano
 import torch
@@ -32,6 +33,11 @@ def main():
     model = RFDETRNano(device=device)
     model_name = model.__class__.__name__
 
+    # the best checkpoint is stored in "outputs/checkpoint_best_total.pth"
+    last_ckpt = os.path.join(args.output_dir, "last.ckpt")
+    resume = last_ckpt if os.path.isfile(last_ckpt) else None
+    print(f"Resuming from {resume}" if resume else "No checkpoint found, starting fresh")
+ 
     model.train(
         dataset_dir=args.dataset_dir,
         epochs=3,
@@ -39,6 +45,7 @@ def main():
         grad_accum_steps=4,
         lr=1e-4,
         output_dir=args.output_dir,
+        resume=resume,
         progress_bar=True,
         wandb=False,
         project="jetbdd",
