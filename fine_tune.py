@@ -18,6 +18,10 @@ def main():
     parser.add_argument("--attr-path", default="data/BDD_attributes.json",help="Path to the BDD attributes JSON. Default: %(default)s")
     parser.add_argument("--output-dir", default="outputs", help="Where checkpoints and logs are written. Default: %(default)s")
     parser.add_argument("--wandb", default=False, help="Whether wandb should be record results Default: %(default)s")
+    parser.add_argument("--epochs", default=1)
+    parser.add_argument("--batch-size", default=16)
+    parser.add_argument("--lr", default=1e-4)
+    parser.add_argument("--grad_accum_steps", default=4)
     args = parser.parse_args()
 
     if torch.backends.mps.is_available():
@@ -40,10 +44,10 @@ def main():
  
     model.train(
         dataset_dir=args.dataset_dir,
-        epochs=3,
-        batch_size=16,
-        grad_accum_steps=4,
-        lr=1e-4,
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        grad_accum_steps=args.grad_accum_steps,
+        lr=args.lr,
         output_dir=args.output_dir,
         resume=resume,
         progress_bar=True,
