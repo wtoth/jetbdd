@@ -17,11 +17,11 @@ def main():
     parser.add_argument("--pred-path", default="data/train_predictions.json", help="Path to the training predictions JSON. Default: %(default)s")
     parser.add_argument("--attr-path", default="data/BDD_attributes.json",help="Path to the BDD attributes JSON. Default: %(default)s")
     parser.add_argument("--output-dir", default="outputs", help="Where checkpoints and logs are written. Default: %(default)s")
-    parser.add_argument("--wandb", default=False, help="Whether wandb should be record results Default: %(default)s")
-    parser.add_argument("--epochs", default=1)
-    parser.add_argument("--batch-size", default=16)
-    parser.add_argument("--lr", default=1e-4)
-    parser.add_argument("--grad_accum_steps", default=4)
+    parser.add_argument("--wandb", action="store_true", help="Log results to wandb")
+    parser.add_argument("--epochs", type=int, default=1)
+    parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--grad-accum-steps", type=int, default=4)
     args = parser.parse_args()
 
     if torch.backends.mps.is_available():
