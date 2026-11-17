@@ -51,9 +51,9 @@ def main():
         output_dir=args.output_dir,
         resume=resume,
         progress_bar=True,
-        wandb=False,
+        wandb=args.wandb,
         project="jetbdd",
-        run=f"{model_name}-test",
+        run=f"{model_name}",
         train_log_on_step=True,
     )
 
