@@ -1,6 +1,6 @@
 import os
 import argparse
-from rfdetr import RFDETRBase, RFDETRNano
+from rfdetr import RFDETRNano, RFDETRSmall, RFDETRMedium, RFDETRLarge
 import torch
 
 
@@ -9,9 +9,16 @@ IMAGE_DIR = "data/100k/train"
 PRED_PATH = "data/train_predictions.json"
 ATTR_PATH = "data/BDD_attributes.json"
 OUTPUT_DIR = "outputs"
+MODELS = {
+    "nano": RFDETRNano,
+    "small": RFDETRSmall,
+    "medium": RFDETRMedium,
+    "large": RFDETRLarge,
+}
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model", choices=MODELS.keys(), default="nano", help="RF-DETR model size. Default: %(default)s")
     parser.add_argument("--log", action="store_true", default=False, help="Enable logging")
     parser.add_argument("--dataset-dir", default="data/100k", help="Root of the dataset (contains train/valid/test splits). Default: %(default)s")
     parser.add_argument("--pred-path", default="data/train_predictions.json", help="Path to the training predictions JSON. Default: %(default)s")
@@ -34,7 +41,7 @@ def main():
         print("cpu")
         device = torch.device("cpu")
 
-    model = RFDETRNano(device=device)
+    model = MODELS[args.model](device=device)
     model_name = model.__class__.__name__
 
     # the best checkpoint is stored in "outputs/checkpoint_best_total.pth"
