@@ -26,9 +26,10 @@ def main():
     parser.add_argument("--output-dir", default="outputs", help="Where checkpoints and logs are written. Default: %(default)s")
     parser.add_argument("--wandb", action="store_true", help="Log results to wandb")
     parser.add_argument("--epochs", type=int, default=1)
-    parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--grad-accum-steps", type=int, default=4)
+    parser.add_argument("--grad-accum-steps", type=int, default=8)
+    parser.add_argument("--gradient-checkpointing", action="store_true", help="Activate gradient checkpointing reducing on-gpu memory requirements")
     args = parser.parse_args()
 
     if torch.backends.mps.is_available():
@@ -41,7 +42,7 @@ def main():
         print("cpu")
         device = torch.device("cpu")
 
-    model = MODELS[args.model](device=device)
+    model = MODELS[args.model](device=device, gradient_checkpointing=args.gradient_checkpointing)
     model_name = model.__class__.__name__
 
     # the best checkpoint is stored in "outputs/checkpoint_best_total.pth"
@@ -62,6 +63,7 @@ def main():
         project="jetbdd",
         run=f"{model_name}",
         train_log_on_step=True,
+        devices="auto"
     )
 
 if __name__ == "__main__":
